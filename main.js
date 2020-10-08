@@ -16,12 +16,14 @@ const path                           = require('path').join,
 
 const { analyze, paipugamedata, analyzeGameRecord, getUserID, setUserID, reporterror } = require('./lib/majsoul/analyze');
 
+const argv = require('yargs').default('auto', 'false').parse(process.argv.slice(1));
+
 let InMacOS = process.platform == 'darwin';
 
 var paipuversion = undefined;
 var appPath = app.getAppPath();
 app.setPath('userData', appPath + '/UserData');
-let dataPath = 'data/';
+let dataPath = '../data/';
 
 if (InMacOS) dataPath = __dirname + '/../../../../' + dataPath;
 
@@ -172,13 +174,13 @@ const ready = () => {
                 downloadconvertresult[2] ++ ;
             }
         }
-        dialog.showMessageBox({
-            type: 'info',
-            noLink: true,
-            buttons: ['确定'],
-            title: '开始下载转换',
-            message: '共有 ' + downloadconvertlist.length + ' 个牌谱需要下载转换\n在模拟窗口左上角可以看到进度'
-        });
+        // dialog.showMessageBox({
+        //     type: 'info',
+        //     noLink: true,
+        //     buttons: ['确定'],
+        //     title: '开始下载转换',
+        //     message: '共有 ' + downloadconvertlist.length + ' 个牌谱需要下载转换\n在模拟窗口左上角可以看到进度'
+        // });
         nextdownloadconvert();
     }
 
@@ -217,29 +219,31 @@ const ready = () => {
 
     function finaldownloadconvert(){
         //把牌谱连成一个数组减少分析时磁盘读取次数
-        let paipus = [];
-        let userid = getUserID();
-        let paipudir = path(dataPath, 'majsoul', userid.toString(), 'paipus');
-        let paipulist = fs.readdirSync(paipudir);
-        for (let i in paipulist)
-            paipus.push(JSON.parse(fs.readFileSync(path(paipudir, paipulist[i]))));
-        fs.writeFileSync(path(dataPath, 'majsoul', userid.toString(), 'paipus.txt'), JSON.stringify(paipus));
+        // let paipus = [];
+        // let userid = getUserID();
+        // let paipudir = path(dataPath, 'majsoul', userid.toString(), 'paipus');
+        // let paipulist = fs.readdirSync(paipudir);
+        // for (let i in paipulist)
+        //     paipus.push(JSON.parse(fs.readFileSync(path(paipudir, paipulist[i]))));
+        // fs.writeFileSync(path(dataPath, 'majsoul', userid.toString(), 'paipus.txt'), JSON.stringify(paipus));
 
-        let paipuversiontxt = path(dataPath, 'majsoul', userid.toString(), 'paipuversion.txt');
-        fs.writeFileSync(paipuversiontxt, JSON.stringify(paipuversion));
+        // let paipuversiontxt = path(dataPath, 'majsoul', userid.toString(), 'paipuversion.txt');
+        // fs.writeFileSync(paipuversiontxt, JSON.stringify(paipuversion));
 
-        let d = new Date();
-        d.setTime(downloadconvertresult[3] * 1000);
-        let timestr = d.toString();
-        dialog.showMessageBox({
-            type: 'info',
-            noLink: true,
-            buttons: ['确定'],
-            title: '下载转换完成',
-            message: '完成 ' + downloadconvertresult[0] + '/' + downloadconvertresult[2] + ' 个下载转换任务。下载成功牌谱的最晚时间是' + timestr
-        });
+        // let d = new Date();
+        // d.setTime(downloadconvertresult[3] * 1000);
+        // let timestr = d.toString();
+        // dialog.showMessageBox({
+        //     type: 'info',
+        //     noLink: true,
+        //     buttons: ['确定'],
+        //     title: '下载转换完成',
+        //     message: '完成 ' + downloadconvertresult[0] + '/' + downloadconvertresult[2] + ' 个下载转换任务。下载成功牌谱的最晚时间是' + timestr
+        // });
         downloadconvertresult = undefined;
         downloadconvertlist = undefined;
+        if (argv.auto == 'true')
+            app.exit(0);
     }
 
     function downloadconvertcallback(data){
@@ -256,7 +260,7 @@ const ready = () => {
             fs.writeFileSync(paipup, JSON.stringify(paipu));
             if (paipu.gamedata.endtime > downloadconvertresult[3])
                 downloadconvertresult[3] = paipu.gamedata.endtime;
-            paipuversion[nowconvert] = config.get('Version');
+            // paipuversion[nowconvert] = config.get('Version');
         }
         nextdownloadconvert();
     }
@@ -341,13 +345,13 @@ const ready = () => {
             label: '进入国际服',
             click: function () {
                 gotonewpage('https://mahjongsoul.game.yo-star.com');
-/*                 dialog.showMessageBox({
-                    type: 'info',
-                    noLink: true,
-                    buttons: ['确定'],
-                    title: '国际服提示',
-                    message: '由于技术原因，使用国际服时请确保当前网络能够较为通畅的访问Google, FaceBook等，否则很可能无法正确获取牌谱数据。'
-                }); */
+                // dialog.showMessageBox({
+                //     type: 'info',
+                //     noLink: true,
+                //     buttons: ['确定'],
+                //     title: '国际服提示',
+                //     message: '由于技术原因，使用国际服时请确保当前网络能够较为通畅的访问Google, FaceBook等，否则很可能无法正确获取牌谱数据。'
+                // });
             }
         }, {
             label: '进入国服（已关服）',
@@ -447,56 +451,56 @@ const ready = () => {
             if (paipugamedata[id] == undefined)
                 paipugamedata[id] = gdata;
         }
-        if (oldgamedatas.length > 0)
-            dialog.showMessageBox({
-                type: 'info',
-                noLink: true,
-                buttons: ['确定'],
-                title: '发现旧牌谱',
-                message: `发现 ${oldgamedatas.length} 个旧版本获取的牌谱数据，请前往 牌谱 界面重新获取一遍牌谱数据。`
-            });
+        // if (oldgamedatas.length > 0)
+        //     dialog.showMessageBox({
+        //         type: 'info',
+        //         noLink: true,
+        //         buttons: ['确定'],
+        //         title: '发现旧牌谱',
+        //         message: `发现 ${oldgamedatas.length} 个旧版本获取的牌谱数据，请前往 牌谱 界面重新获取一遍牌谱数据。`
+        //     });
 
-        paipuversion = {};
-        ppp = path(root, 'paipuversion.txt');
-        if (fs.existsSync(ppp))
-            paipuversion = JSON.parse(String(fs.readFileSync(ppp)));
-        let paipusdirdata = new Set(fs.readdirSync(path(root, 'paipus')));
-        let oldpaipus = [], dirite = paipusdirdata.keys();
-        for (;;){
-            let i = dirite.next();
-            if (i.done) break;
-            i = i.value;
-            let add = false;
-            if (paipuversion.hasOwnProperty(i)){
-                if (config.versionconvert(paipuversion[i]) < config.versionconvert(config.get('PaipuMinVersion')))
-                    add = true;
-            }
-            else add = true;
-            if (add)
-                oldpaipus.push(i);
-        }
+        // paipuversion = {};
+        // ppp = path(root, 'paipuversion.txt');
+        // if (fs.existsSync(ppp))
+        //     paipuversion = JSON.parse(String(fs.readFileSync(ppp)));
+        // let paipusdirdata = new Set(fs.readdirSync(path(root, 'paipus')));
+        // let oldpaipus = [], dirite = paipusdirdata.keys();
+        // for (;;){
+        //     let i = dirite.next();
+        //     if (i.done) break;
+        //     i = i.value;
+        //     let add = false;
+        //     if (paipuversion.hasOwnProperty(i)){
+        //         if (config.versionconvert(paipuversion[i]) < config.versionconvert(config.get('PaipuMinVersion')))
+        //             add = true;
+        //     }
+        //     else add = true;
+        //     if (add)
+        //         oldpaipus.push(i);
+        // }
         //console.log(oldpaipus);
 
-        if (oldpaipus.length == 0) return;
+        // if (oldpaipus.length == 0) return;
 
-        dialog.showMessageBox({
-            type: 'info',
-            noLink: true,
-            buttons: ['确定'],
-            title: '发现旧牌谱',
-            message: `发现 ${oldpaipus.length} 个旧版本生成的牌谱，需要重新生成，会将旧牌谱删去，可能需要一定时间。`
-        });
-        for (let i in oldpaipus){
-            ppp = path(root, 'paipus', oldpaipus[i]);
-            fs.unlinkSync(ppp);
-        }
-        dialog.showMessageBox({
-            type: 'info',
-            noLink: true,
-            buttons: ['确定'],
-            title: '发现旧牌谱',
-            message: `旧牌谱删除完成。`
-        });
+        // dialog.showMessageBox({
+        //     type: 'info',
+        //     noLink: true,
+        //     buttons: ['确定'],
+        //     title: '发现旧牌谱',
+        //     message: `发现 ${oldpaipus.length} 个旧版本生成的牌谱，需要重新生成，会将旧牌谱删去，可能需要一定时间。`
+        // });
+        // for (let i in oldpaipus){
+        //     ppp = path(root, 'paipus', oldpaipus[i]);
+        //     fs.unlinkSync(ppp);
+        // }
+        // dialog.showMessageBox({
+        //     type: 'info',
+        //     noLink: true,
+        //     buttons: ['确定'],
+        //     title: '发现旧牌谱',
+        //     message: `旧牌谱删除完成。`
+        // });
     }
     ipcMain.on('downloadconvertresult', (event, data) => {
         downloadconvertcallback(data);
@@ -514,6 +518,9 @@ const ready = () => {
     });
     
     setTimeout(checknewestversion, 3000);
+
+    if (argv.auto == 'true')
+        setTimeout(function (){ bwindowsendmessage('collectpaipu', 'downloadconvertpaipu'); }, 20000);
 };
 
 app.on('ready', ready);
