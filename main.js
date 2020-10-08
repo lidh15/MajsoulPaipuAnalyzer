@@ -119,6 +119,8 @@ const ready = () => {
         let msgstr = '', root, paipu4 = 0, paipu3 = 0, downloaded = 0, converted = 0, userid = getUserID();
         if (userid <= 0){
             showcantgetIDmsg();
+            if (argv.auto == 'true')
+                app.exit(1);
             return;
         }
         root = path(dataPath, 'majsoul', userid.toString());
